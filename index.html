@@ -51,6 +51,15 @@
 
 <body>
   <main>
+    <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
+    <script>
+      window.TrackJS && TrackJS.install({ 
+        token: "8d06b3f1d0c1475aa429b197c52c5f28",
+        application: "lab9"
+        // for more configuration options, see https://docs.trackjs.com
+      });
+    </script>
+                        
     <form>
       <fieldset>
         <legend>Error Calculator</legend>
@@ -84,24 +93,61 @@
       <button>End Timer</button>
       <button>Console Trace</button>
       <button>Trigger a Global Error</button>
+      <button>Trigger custom error</button>
     </section>
   </main>
 
   <script>
     let form = document.querySelector('form');
+    let output, firstNum, secondNum, operator;
+    //TrackJS.track('Testing TrackJS!');
     form.addEventListener('submit', e => {
       e.preventDefault();
-      let output = document.querySelector('output');
-      let firstNum = document.querySelector('#first-num').value;
-      let secondNum = document.querySelector('#second-num').value;
-      let operator = document.querySelector('#operator').value;
-      output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+      output = document.querySelector('output');
+      firstNum = document.querySelector('#first-num').value;
+      secondNum = document.querySelector('#second-num').value;
+      operator = document.querySelector('#operator').value;
+      try{
+        output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+      }catch(e){
+        console.log("Hopefully this is where try catch is");
+        throw new Error("Type issue with input");
+      }finally{
+        console.log("x_x");
+      }
     });
+
+    class myError extends Error{
+      constructor(message) {
+        super(message);
+        this.name = "MyTypeOfError!";
+      }
+    }
 
     let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
 
     // Start your code here
     // You may move this JS to another file if you wish
+    errorBtns[0].addEventListener('click', ()=> {console.log("Console Log Demo: Starting with just string")});
+    errorBtns[1].addEventListener('click', ()=> {console.error("Console Log Demo: Pretend there is an Error here!")});
+    errorBtns[2].addEventListener('click', ()=> {console.count("Console Log Demo:")});
+    errorBtns[3].addEventListener('click', ()=> {console.warn("Console Log Demo:No more stuff to log!")});
+    errorBtns[4].addEventListener('click', ()=> {console.assert(false, "Console Log Demo:We need to pull out its too dangerous!")});
+    errorBtns[5].addEventListener('click', ()=> {console.clear()});
+    errorBtns[6].addEventListener('click', ()=> {console.dir(document.location)});
+    errorBtns[7].addEventListener('click', ()=> {console.dirxml(form)});
+    errorBtns[8].addEventListener('click', ()=> {console.group("Best Group")});
+    errorBtns[9].addEventListener('click', ()=> {console.groupEnd("Best Group")});
+    errorBtns[10].addEventListener('click', ()=> {console.table({first:"Eric", Last:"Chen", numMemes:"none"})});
+    errorBtns[11].addEventListener('click', ()=> {console.time()});
+    errorBtns[12].addEventListener('click', ()=> {console.timeEnd()});
+    errorBtns[13].addEventListener('click', ()=> {randomFunction()});
+    function randomFunction() {console.trace()};
+    errorBtns[14].addEventListener('click', ()=> {tenxBugFarmer});
+    errorBtns[15].addEventListener('click',()=>{myTest()});
+
+    function myTest() {throw new myError("Free Bugs!")};
+    window.onerror = function(){console.log("Window.onerror: I suck")};
   </script>
 </body>
 
